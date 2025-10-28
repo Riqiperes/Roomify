@@ -1,10 +1,10 @@
 {
   "name": "roomify-backend",
-  "private": true,
+  "version": "1.0.0",
   "type": "module",
+  "main": "server.js",
   "scripts": {
-    "dev": "node --watch src/server.js",
-    "start": "NODE_ENV=production node src/server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "cookie-parser": "^1.4.6",

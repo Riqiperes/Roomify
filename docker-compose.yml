@@ -1,26 +1,22 @@
-version: latest
-
+version: "3.9"
 services:
   backend:
     build: ./backend
-    container_name: roomify_backend
-    ports: ["4000:4000"]
-    env_file: ./.env
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env
+    networks: [roomify]
 
   frontend:
     build: ./frontend
-    container_name: roomify_frontend
-    ports: ["5173:5173"]
-    env_file: ./.env
     environment:
-      - VITE_API_BASE=${VITE_API_BASE}
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - VITE_BACKEND_URL=http://127.0.0.1:8080
+    ports:
+      - "5173:80"
     depends_on:
       - backend
-    restart: unless-stopped
+    networks: [roomify]
+
+networks:
+  roomify: {}

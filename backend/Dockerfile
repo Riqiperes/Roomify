@@ -1,18 +1,7 @@
-FROM node:20-slim
+FROM node:20-alpine
 WORKDIR /app
-
-# Copy package files first to leverage Docker layer caching
-COPY package*.json ./
-
-# Update OS packages to pick up security fixes, install node deps and attempt to fix npm audit issues
-RUN apt-get update \
-	&& apt-get upgrade -y \
-	&& rm -rf /var/lib/apt/lists/* \
-	&& npm ci \
-	&& npm audit fix --only=prod || true
-
-# Copy application source
-COPY src ./src
-
-EXPOSE 4000
-CMD ["npm","run","dev"]
+COPY package.json package-lock.json* ./
+RUN npm install --no-audit --no-fund
+COPY . .
+EXPOSE 8080
+CMD ["npm", "start"]

@@ -1,0 +1,38 @@
+:root {
+  --bg: #0b0b0f;
+  --panel: #141420;
+  --muted: #b9c0cc;
+  --brand: #1DB954;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; background: var(--bg); color: #eaeaea; }
+
+.screen { min-height: 100vh; display: grid; place-items: center; text-align: center; padding: 24px; }
+.scroll { align-items: start; }
+.title { font-size: 44px; font-weight: 800; margin-bottom: 12px; }
+.subtitle { opacity: .8; margin-bottom: 24px; }
+.primary { background: var(--brand); color: #072b12; border: 0; padding: 12px 18px; border-radius: 12px; font-weight: 800; cursor: pointer; }
+
+.room { min-height: 100vh; padding: 16px; }
+.room-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.room-top button { background: #232338; color: #eaeaea; border: 0; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 14px; margin-top: 10px; }
+.card { background: var(--panel); border-radius: 16px; padding: 10px; display: flex; gap: 10px; align-items: center; }
+.card img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; }
+.muted { color: var(--muted); font-size: 12px; }
+
+/* Isométrico simple */
+.iso-wrap { position: relative; height: calc(100vh - 64px); border-radius: 18px; overflow: hidden; background: linear-gradient(135deg, #101224, #1b1d32); }
+.iso-left, .iso-right { position: absolute; top: 0; bottom: 28%; width: 50%; }
+.iso-left { left: 0; background: #182238; clip-path: polygon(0 0, 100% 0, 88% 100%, 0% 100%); padding: 16px; }
+.iso-right { right: 0; background: #1c2542; clip-path: polygon(12% 0, 100% 0, 100% 100%, 0 100%); padding: 16px; }
+.iso-floor { position: absolute; bottom: 0; left: 0; right: 0; height: 28%; background: linear-gradient(180deg, #23263a, #161826); transform: skewY(-10deg); transform-origin: bottom; }
+
+.furniture { position: absolute; bottom: 10%; left: 6%; width: 42%; background: #3a2a23; border-radius: 10px; padding: 8px; box-shadow: 0 12px 30px rgba(0,0,0,.35); }
+.player { background: #0f0f17; border-radius: 10px; height: 64px; display: grid; place-items: center; cursor: pointer; margin-bottom: 8px; font-size: 28px; }
+.shelf { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.shelf img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 6px; }
+
+.posters { position: absolute; right: 6%; bottom: 12%; width: 46%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.posters img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 10px; box-shadow: 0 8px 18px rgba(0,0,0,.4); }

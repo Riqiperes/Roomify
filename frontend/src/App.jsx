@@ -1,50 +1,77 @@
 import React, { useState, useEffect } from "react";
+import "./styles.css";
 
-const BACKEND = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+
+const RAW_BACKEND = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE || "http://127.0.0.1:8080/callback";
+const BACKEND = String(RAW_BACKEND).replace(/\/callback\/?$/, "").replace(/\/$/, "");
+const API_BASE = BACKEND;
 
 export default function App() {
-  const [me, setMe] = useState(null);
+  const [me, setMe] = useState(undefined); // undefined = loading, null = not logged, object = logged
   const [items, setItems] = useState([]);
   const [type, setType] = useState("artists"); // artists | tracks | albums
   const [limit, setLimit] = useState(15);
   const [term, setTerm] = useState("medium_term");
 
   async function loadMe() {
-    const r = await fetch(`${BACKEND}/api/me`, { credentials: "include" });
-    if (r.ok) setMe(await r.json());
+    try {
+      const r = await fetch(`${API_BASE}/api/me`, { credentials: "include" });
+      if (r.ok) {
+        setMe(await r.json());
+      } else {
+        setMe(null);
+      }
+    } catch {
+      setMe(null);
+    }
   }
+
   async function loadTop(selectedType = type) {
     let url;
-    if (selectedType === "artists") url = `${BACKEND}/api/top-artists?limit=${limit}&term=${term}`;
-    else if (selectedType === "tracks") url = `${BACKEND}/api/top-tracks?limit=${limit}&term=${term}`;
-    else if (selectedType === "albums") url = `${BACKEND}/api/saved-albums?limit=${limit}`;
+    if (selectedType === "artists") url = `${API_BASE}/api/top-artists?limit=${limit}&term=${term}`;
+    else if (selectedType === "tracks") url = `${API_BASE}/api/top-tracks?limit=${limit}&term=${term}`;
+    else if (selectedType === "albums") url = `${API_BASE}/api/saved-albums?limit=${limit}`;
 
     const r = await fetch(url, { credentials: "include" });
     if (r.ok) {
       const json = await r.json();
-      // artists and tracks return { items: [...] }, saved albums returns { items: [{ album: {...} }, ...] }
       let list = json.items || [];
-      if (selectedType === "albums") {
-        list = list.map(i => i.album || i);
-      }
+      if (selectedType === "albums") list = list.map(i => i.album || i);
       setItems(list);
     } else {
       alert("Inicia sesión primero.");
+      setMe(null);
     }
   }
 
-  // Check session on mount so the UI reflects login state after redirect
   useEffect(() => {
     loadMe();
   }, []);
 
+  // loading
+  if (me === undefined) return <div style={{padding:24}}>Cargando…</div>;
+
+  // not logged -> show login button
+  if (me === null) {
+    return (
+      <div className="login-container">
+        <h1 className="title">Roomify</h1>
+        <button
+          className="login-button"
+          onClick={() => (window.location.href = `${API_BASE}/login`)}
+        >
+          Conectar a Spotify
+        </button>
+        <p style={{marginTop:12}}>Usando backend: {API_BASE}</p>
+      </div>
+    );
+  }
+
+  // logged -> show stats UI
   return (
     <div style={{padding:24}}>
       <h1>Roomify – Demo mínima</h1>
-      <p>1) <a href={`${BACKEND}/login`}>Conectar con Spotify</a></p>
-      <div style={{marginTop:12}}>
-        <button onClick={loadMe}>Ver /api/me</button>
-      </div>
+      <p>Conectado como <b>{me.display_name}</b> — <button onClick={() => { fetch(`${API_BASE}/logout`, { method: "POST", credentials: "include" }).then(()=>setMe(null)); }}>Cerrar sesión</button></p>
 
       <div style={{marginTop:12, display:"flex", gap:8, alignItems:"center"}}>
         <label>Show:</label>
@@ -64,11 +91,9 @@ export default function App() {
         <button onClick={() => loadTop(type)}>Load</button>
       </div>
 
-      {me && (
-        <div style={{marginTop:16}}>
-          <b>Usuario:</b> {me.display_name} ({me.email})
-        </div>
-      )}
+      <div style={{marginTop:16}}>
+        <button onClick={() => loadMe()}>Refresh user</button>
+      </div>
 
       <ul style={{marginTop:16, display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(220px,1fr))", gap:12, listStyle:"none", padding:0}}>
         {items.map((it, idx) => {

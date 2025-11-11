@@ -2,7 +2,7 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Allow injecting VITE_BACKEND_URL at build time. Default falls back to localhost.
+# Allow injecting VITE_BACKEND_URL at build time. Default falls back to backend root (no /callback).
 ARG VITE_BACKEND_URL=http://127.0.0.1:8080
 ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
 

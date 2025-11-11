@@ -11,7 +11,7 @@ services:
   frontend:
     build: ./frontend
     environment:
-      - VITE_BACKEND_URL=http://127.0.0.1:8080
+      - VITE_BACKEND_URL=http://127.0.0.1:8080/callback
     ports:
       - "5173:80"
     depends_on:
